@@ -1,2 +1,2 @@
 # f_project
-final project for GoIT python course
+final project for GoIT Python course
