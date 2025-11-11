@@ -11,6 +11,43 @@ from config import APP_NAME, APP_VERSION
 from commands import REG
 from storage import STORAGE_FILE, load_storage
 
+# ----prompt_toolkit для автокомпліту команд ----
+from prompt_toolkit.completion import Completer, Completion
+from prompt_toolkit import PromptSession
+
+
+class HintsCompleter(Completer):
+    def __init__(self, hints, get_contacts_func=None):
+        self.hints = tuple(sorted(set(hints)))
+        self.get_contacts_func = get_contacts_func  # optional callback
+
+    def get_completions(self, document, complete_event):
+        tb = document.text_before_cursor           # <-- no .strip()
+        word = document.get_word_before_cursor()
+        tokens = tb.split()
+        ends_with_space = tb.endswith(" ")
+
+        # --- First token (command) completion ---
+        # Cases considered "still typing the command":
+        #   ""                      -> no tokens yet
+        #   "ad"                    -> 1 token, no trailing space
+        #   "add"                   -> 1 token, no trailing space
+        if not tokens or (len(tokens) == 1 and not ends_with_space):
+            low = word.lower()
+            for hint in self.hints:
+                if hint.startswith(low):
+                    yield Completion(hint, start_position=-len(word))
+            return
+
+        # --- Argument completion (after first space) ---
+        command = tokens[0].lower()
+        if command in ("add", "change", "phone", "add-birthday", "show-birthday"):
+            if self.get_contacts_func:
+                low = word.lower()
+                for name in self.get_contacts_func():
+                    if name.lower().startswith(low):
+                        yield Completion(name, start_position=-len(word))
+
 
 def parse_input(line: str) -> Tuple[str, List[str]]:
     """
@@ -46,15 +83,71 @@ def get_all_commands() -> List[str]:
     return list(REG.all_commands())
 
 
+# fetch contact names from storage dynamically
+def get_contact_names(storage):
+    """
+    Return a list of contact display names from storage.contacts (AddressBook).
+    Handles both API-based (.all()) and dict-backed (.data / ._data) implementations.
+    """
+    names = []
+
+    try:
+        ab = storage.contacts  # AddressBook
+    except AttributeError:
+        return []
+
+    # Case 1: AddressBook has .all() returning Record objects
+    try:
+        for rec in ab.all():
+            n = getattr(rec, "name", None)
+            n = getattr(n, "value", n)
+            if n:
+                names.append(str(n))
+    except Exception:
+        pass
+
+    # Case 2: dict-like .data / ._data with Record values
+    for attr in ("data", "_data"):
+        d = getattr(ab, attr, None)
+        if isinstance(d, dict):
+            for rec in d.values():
+                n = getattr(rec, "name", None)
+                n = getattr(n, "value", n)
+                if n:
+                    names.append(str(n))
+
+    # Deduplicate and return
+    seen, uniq = set(), []
+    for n in names:
+        if n and n not in seen:
+            uniq.append(n)
+            seen.add(n)
+
+    return uniq
+
+
 def run_cli() -> None:
-    """Главный цикл CLI приложения."""
     storage = load_storage()
     print(f"{APP_NAME} v{APP_VERSION}. Type 'help' for commands.")
     print(f"Data stored in: {STORAGE_FILE}\n")
 
+    session = PromptSession()
+
+    # Debug
+    #print("DEBUG contact names:", get_contact_names(storage))
+
+    completer = HintsCompleter(
+        hints=get_all_commands(),
+        get_contacts_func=lambda: get_contact_names(storage)
+    )
+
     while True:
         try:
-            line = input("enter the command > ").strip()
+            line = session.prompt(
+                "enter the command > ",
+                completer=completer,
+                complete_while_typing=True
+            ).strip()
         except (EOFError, KeyboardInterrupt):
             print()
             break
@@ -71,8 +164,8 @@ def run_cli() -> None:
 
         handler = REG.handler(resolved)
         out = handler(args, storage)
-        if out == "__EXIT__":
-            break
+        if out == "__EXIT__": break
         print(out)
 
     print("Bye!")
+
