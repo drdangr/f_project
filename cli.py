@@ -46,9 +46,6 @@ def get_all_commands() -> List[str]:
     return list(REG.all_commands())
 
 
-# commands must match exactly; no fuzzy suggestions
-
-
 def run_cli() -> None:
     """Главный цикл CLI приложения."""
     storage = load_storage()
