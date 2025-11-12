@@ -81,7 +81,7 @@ class CommandRegistry:
             section = self._sections.get(cmd, DEFAULT_SECTION)
             groups.setdefault(section, []).append(cmd)
 
-        lines = ["Доступные команды:"]
+        lines = ["Доступні команди:"]
         for section in SECTION_ORDER:
             cmds = groups.get(section, [])
             if not cmds:
@@ -93,7 +93,7 @@ class CommandRegistry:
                 lines.append(f"  - {cmd}: {desc}")
 
         lines.append("")
-        lines.append("Для деталей по конкретной команде используйте: help <command>")
+        lines.append("Для деталей щодо конкретної команди використовуйте: help <command>")
         return "\n".join(lines)
 
 
