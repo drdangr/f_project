@@ -10,6 +10,7 @@ import functools
 from models import Address, Birthday, Email, Name, Note, Phone, Record
 from storage import Storage, save_storage
 
+from datetime import date
 
 # Тип для обробника команди: функція приймає аргументи та сховище, повертає рядок
 Handler = Callable[[List[str], Storage], str]
@@ -287,7 +288,7 @@ def cmd_show_birthday(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "birthdays",
-    help="Birthdays within week",
+    help="Show upcoming birthdays (within 7 days)",
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -297,16 +298,20 @@ def cmd_birthdays(args: List[str], storage: Storage) -> str:  # noqa: ARG001
     if not bucket:
         return "No upcoming birthdays."
 
-    weekday_names = {
-        0: "Today",
-        1: "Tomorrow",
-        **{i: f"+{i} days" for i in range(2, days + 1)},
-    }
+    today = date.today()
     lines = []
     for delta, items in bucket.items():
-        lines.append(f"{weekday_names.get(delta, f'+{delta} days')}:")
         for name, bday, wk in items:
-            lines.append(f"  {name} — {bday} ({wk})")
+            record = storage.contacts.get_record(name)
+            next_bd = record.get_next_birthday(today)
+            date_str = next_bd.strftime("%d.%m.%Y")
+            if delta == 0:
+                lines.append(f"🎉 Congrats {name} — today! ({date_str}, {wk})")
+            elif delta == 1:
+                lines.append(f"🎉 Congrats {name} — tomorrow! ({date_str}, {wk})")
+            else:
+                lines.append(f"🎉 Congrats {name} — in {delta} days ({date_str}, {wk})")
+
     return "\n".join(lines)
 
 

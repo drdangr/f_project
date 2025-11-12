@@ -387,18 +387,5 @@ class NoteBook(UserDict):
         if sort_by == "created":
             return sorted(self.data.values(), key=lambda n: n.created)
         return sorted(self.data.values(), key=lambda n: n.title.lower())
-
-if __name__ == "__main__":
-    from datetime import date
-
-    # Створюємо контакт із днем народження 29 лютого 2000 року
-
-    record = Record(Name("Тестовий Контакт"))
-    record.set_birthday(Birthday("29.02.2000"))
-
-    # Тестуємо різні дати
-    print("Сьогодні:", date.today())
-    print("Наступний день народження:", record.get_next_birthday(date(2025, 11, 12)))
-    print("Днів до ДН:", record.days_to_birthday(date(2025, 11, 12)))
  
  
