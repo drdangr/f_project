@@ -41,7 +41,9 @@ class HintsCompleter(Completer):
 
         # --- Argument completion (after first space) ---
         command = tokens[0].lower()
-        if command in ("add", "change", "phone", "add-birthday", "show-birthday"):
+        if command in ("add-contact", "change-phone", "show-phone", "add-birthday"
+                       , "show-birthday","add-email", "delete-email","add-address", "delete-contact"
+                       ,"delete-phone","delete-address"):
             if self.get_contacts_func:
                 low = word.lower()
                 for name in self.get_contacts_func():

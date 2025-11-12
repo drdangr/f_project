@@ -183,8 +183,8 @@ def mutating(func: Handler) -> Handler:
 
 
 @REG.register(
-    "add",
-    help='Usage: add "Name" [0123456789]',
+    "add-contact",
+    help='Usage: add-contact "Name" [0123456789]',
     section=SECTION_PHONEBOOK,
     min_args=1,
 )
@@ -216,8 +216,8 @@ def cmd_add(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "change",
-    help='Usage: change "Name" old10 new10',
+    "change-phone",
+    help='Usage: change-phone "Name" old10 new10',
     section=SECTION_PHONEBOOK,
     min_args=3,
 )
@@ -230,8 +230,8 @@ def cmd_change(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "phone",
-    help='Usage: phone "Name"',
+    "show-phone",
+    help='Usage: show-phone "Name"',
     section=SECTION_PHONEBOOK,
     min_args=1,
 )
@@ -245,7 +245,7 @@ def cmd_phone(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "all", 
+    "all-contacts", 
     help="Show all contacts", 
     section=SECTION_PHONEBOOK
 )
@@ -325,8 +325,8 @@ def cmd_add_email(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "remove-email",
-    help='Usage: remove-email "Name" example@mail.com',
+    "delete-email",
+    help='Usage: delete-email "Name" example@mail.com',
     section=SECTION_PHONEBOOK,
     min_args=2,
 )
@@ -341,7 +341,7 @@ def cmd_remove_email(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "add-address",
-    help='Usage: set-address "Name" "Kyiv, ..."',
+    help='Usage: add-address "Name" "Kyiv, ..."',
     section=SECTION_PHONEBOOK,
     min_args=2,
 )
@@ -358,8 +358,8 @@ def cmd_set_address(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "remove-phone",
-    help='Usage: remove-phone "Name" 0123456789',
+    "delete-phone",
+    help='Usage: delete-phone "Name" 0123456789',
     section=SECTION_PHONEBOOK,
     min_args=2,
 )
@@ -373,8 +373,8 @@ def cmd_remove_phone(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "remove-address",
-    help='Usage: remove-address "Name"',
+    "delete-address",
+    help='Usage: delete-address "Name"',
     section=SECTION_PHONEBOOK,
     min_args=1,
 )
@@ -388,7 +388,7 @@ def cmd_remove_address(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "find", help="Usage: find query", section=SECTION_PHONEBOOK, min_args=1
+    "find-contact", help="Usage: find-contact query", section=SECTION_PHONEBOOK, min_args=1
 )
 @input_error
 def cmd_find(args: List[str], storage: Storage) -> str:
@@ -433,7 +433,7 @@ def cmd_add_note(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "list-notes",
+    "all-notes",
     help="List all notes (sort by title or created)",
     section=SECTION_NOTES,
 )
@@ -513,8 +513,8 @@ def cmd_edit_note(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "tag-add",
-    help='Usage: tag-add "Title" tag1 tag2 ...',
+    "add-tags",
+    help='Usage: add-tags "Title" tag1 tag2 ...',
     section=SECTION_NOTES,
     min_args=2,
 )
@@ -527,8 +527,8 @@ def cmd_tag_add(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "tag-remove",
-    help='Usage: tag-remove "Title" tag',
+    "delete-tag",
+    help='Usage: delete-tag "Title" tag',
     section=SECTION_NOTES,
     min_args=2,
 )
