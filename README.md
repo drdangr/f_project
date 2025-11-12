@@ -189,7 +189,7 @@ print('✓ Contact created and saved')
 
 ### Вимоги
 - Python 3.9+
-- Тільки стандартна бібліотека (без залежностей!)
+- Залежності з `requirements.txt` (наприклад, `prompt-toolkit`)
 
 ### Старт
 ```bash
