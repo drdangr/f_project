@@ -331,7 +331,7 @@ def cmd_remove_email(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "set-address",
-    help='Установить адрес: set-address "Name" "Kyiv, ..."',
+    help='Вкажіть адресу: set-address "Name" "Kyiv, ..."',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -339,7 +339,11 @@ def cmd_remove_email(args: List[str], storage: Storage) -> str:
 def cmd_set_address(args: List[str], storage: Storage) -> str:
     require_args(args, 2, 'Usage: set-address "Name" "Kyiv, ..."')
     rec = storage.contacts.get_record(args[0])
-    rec.set_address(Address(args[1]))
+    # приєдную всі інші аргументи адреси, e.g. "Kyiv, Khreshchatyk 1"
+    address_text = " ".join(args[1:]).strip()
+    if not address_text:
+        raise ValueError('Address cannot be empty.')
+    rec.set_address(Address(address_text))
     return f"Address set for {rec.name.value}."
 
 
