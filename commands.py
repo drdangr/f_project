@@ -400,7 +400,7 @@ def cmd_add_note(args: List[str], storage: Storage) -> str:
 )
 @input_error
 def cmd_list_notes(args: List[str], storage: Storage) -> str:
-    sort_by = args[0] if args else "title"
+    sort_by = (args[0] if args else "title").strip().lower()
     items = storage.notes.all(sort_by=sort_by)
     if not items:
         return "No notes."
@@ -408,7 +408,8 @@ def cmd_list_notes(args: List[str], storage: Storage) -> str:
     for n in items:
         tgs = ("#" + " #".join(sorted(n.tags))) if n.tags else "(no tags)"
         out.append(f"{n.title} [{tgs}] — {n.created:%Y-%m-%d %H:%M}\n{n.text}")
-    return "\n\n---\n\n".join(out)
+    separator = "\n" + "-" * 40 + "\n"
+    return separator + separator.join(out) + separator
 
 
 @REG.register(
@@ -420,11 +421,20 @@ def cmd_list_notes(args: List[str], storage: Storage) -> str:
 def cmd_find_note(args: List[str], storage: Storage) -> str:
     require_args(args, 1, "Usage: find-note query")
     res = storage.notes.search_text(args[0])
-    return (
-        "\n\n---\n\n".join(f"{n.title}:\n{n.text}" for n in res)
-        if res
-        else "No results."
-    )
+    if not res:
+        return "No results."
+    out = []
+    for n in res:
+        #tgs = ("#" + " #".join(sorted(n.tags))) if n.tags else "(no tags)"
+        if n.tags:
+            sorted_tags = sorted(n.tags)
+            formatted_tags = " #".join(sorted_tags)
+            tgs = f"#{formatted_tags}"
+        else:
+            tgs = "(no tags)"
+        out.append(f"{n.title} [{tgs}]\n{n.text}")
+    separator = "\n" + "-" * 40 + "\n"
+    return separator + separator.join(out) + separator
 
 
 @REG.register(
@@ -436,13 +446,14 @@ def cmd_find_note(args: List[str], storage: Storage) -> str:
 def cmd_find_tag(args: List[str], storage: Storage) -> str:
     require_args(args, 1, "Usage: find-tag tag")
     res = storage.notes.search_tag(args[0])
-    return (
-        "\n\n---\n\n".join(
-            f"{n.title} [#" + " #".join(sorted(n.tags)) + "]\n" + n.text for n in res
-        )
-        if res
-        else "No results."
-    )
+    if not res:
+        return "No results."
+    out = []
+    for n in res:
+        tgs = ("#" + " #".join(sorted(n.tags))) if n.tags else "(no tags)"
+        out.append(f"{n.title} [{tgs}]\n{n.text}")
+    separator = "\n" + "-" * 40 + "\n"
+    return separator + separator.join(out) + separator
 
 
 @REG.register(
