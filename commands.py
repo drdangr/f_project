@@ -178,7 +178,7 @@ def mutating(func: Handler) -> Handler:
 
 @REG.register(
     "add",
-    help='Додати контакт або телефон: add "Name" [0123456789]',
+    help='Add contact or phone: add "Name" [0123456789]',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -211,7 +211,7 @@ def cmd_add(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "change",
-    help='Змінити телефон: change "Name" old10 new10',
+    help='Change phone: change "Name" old10 new10',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -225,7 +225,7 @@ def cmd_change(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "phone",
-    help='Показать телефоны контакта: phone "Name"',
+    help='Show contact phones: phone "Name"',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -238,7 +238,7 @@ def cmd_phone(args: List[str], storage: Storage) -> str:
     return f"{rec.name.value}: {numbers}"
 
 
-@REG.register("all", help="Показать все контакты: all", section=SECTION_PHONEBOOK)
+@REG.register("all", help="Show all contacts: all", section=SECTION_PHONEBOOK)
 @input_error
 def cmd_all(args: List[str], storage: Storage) -> str:  # noqa: ARG001
     items = storage.contacts.all()
@@ -249,7 +249,7 @@ def cmd_all(args: List[str], storage: Storage) -> str:  # noqa: ARG001
 
 @REG.register(
     "add-birthday",
-    help='Додати ДР: add-birthday "Name" DD.MM.YYYY',
+    help='Add birthday: add-birthday "Name" DD.MM.YYYY',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -263,7 +263,7 @@ def cmd_add_birthday(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "show-birthday",
-    help='Показать ДР: show-birthday "Name"',
+    help='Show birthday: show-birthday "Name"',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -277,7 +277,7 @@ def cmd_show_birthday(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "birthdays",
-    help="Дні народження протягом тижня: birthdays",
+    help="Birthdays within week: birthdays",
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -302,7 +302,7 @@ def cmd_birthdays(args: List[str], storage: Storage) -> str:  # noqa: ARG001
 
 @REG.register(
     "add-email",
-    help='Добавить email: add-email "Name" example@mail.com',
+    help='Add email: add-email "Name" example@mail.com',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -316,7 +316,7 @@ def cmd_add_email(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "remove-email",
-    help='Удалить email: remove-email "Name" example@mail.com',
+    help='Remove email: remove-email "Name" example@mail.com',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -331,7 +331,7 @@ def cmd_remove_email(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "set-address",
-    help='Вкажіть адресу: set-address "Name" "Kyiv, ..."',
+    help='Set address: set-address "Name" "Kyiv, ..."',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -348,7 +348,7 @@ def cmd_set_address(args: List[str], storage: Storage) -> str:
 
 
 @REG.register(
-    "find", help="Поиск контактов: find query", section=SECTION_PHONEBOOK
+    "find", help="Find contacts: find query", section=SECTION_PHONEBOOK
 )
 @input_error
 def cmd_find(args: List[str], storage: Storage) -> str:
@@ -359,7 +359,7 @@ def cmd_find(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "delete-contact",
-    help='Удалить контакт: delete-contact "Name"',
+    help='Delete contact: delete-contact "Name"',
     section=SECTION_PHONEBOOK,
 )
 @input_error
@@ -378,7 +378,7 @@ def cmd_delete_contact(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "add-note",
-    help='Добавить заметку: add-note "Title" текст...',
+    help='Add note: add-note "Title" text...',
     section=SECTION_NOTES,
 )
 @input_error
@@ -395,7 +395,7 @@ def cmd_add_note(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "list-notes",
-    help="Показать заметки: list-notes [title|created]",
+    help="List notes: list-notes [title|created]",
     section=SECTION_NOTES,
 )
 @input_error
@@ -414,7 +414,7 @@ def cmd_list_notes(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "find-note",
-    help="Поиск заметок по тексту: find-note query",
+    help="Search notes by text: find-note query",
     section=SECTION_NOTES,
 )
 @input_error
@@ -439,7 +439,7 @@ def cmd_find_note(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "find-tag",
-    help="Поиск заметок по тегу: find-tag tag",
+    help="Search notes by tag: find-tag tag",
     section=SECTION_NOTES,
 )
 @input_error
@@ -458,7 +458,7 @@ def cmd_find_tag(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "edit-note",
-    help='Редактировать заметку: edit-note "Title" новий_текст...',
+    help='Edit note: edit-note "Title" new_text...',
     section=SECTION_NOTES,
 )
 @input_error
@@ -475,7 +475,7 @@ def cmd_edit_note(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "tag-add",
-    help='Добавить теги: tag-add "Title" tag1 tag2 ...',
+    help='Add tags: tag-add "Title" tag1 tag2 ...',
     section=SECTION_NOTES,
 )
 @input_error
@@ -489,7 +489,7 @@ def cmd_tag_add(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "tag-remove",
-    help='Удалить тег: tag-remove "Title" tag',
+    help='Remove tag: tag-remove "Title" tag',
     section=SECTION_NOTES,
 )
 @input_error
@@ -504,7 +504,7 @@ def cmd_tag_remove(args: List[str], storage: Storage) -> str:
 
 @REG.register(
     "delete-note",
-    help='Удалить заметку: delete-note "Title"',
+    help='Delete note: delete-note "Title"',
     section=SECTION_NOTES,
 )
 @input_error
@@ -521,13 +521,13 @@ def cmd_delete_note(args: List[str], storage: Storage) -> str:
 # ==============================
 
 
-@REG.register("hello", help="Привітання від бота", section=SECTION_SYSTEM)
+@REG.register("hello", help="Greeting from bot", section=SECTION_SYSTEM)
 @input_error
 def cmd_hello(args: List[str], storage: Storage) -> str:  # noqa: ARG001
     return "Привіт! Чим можу допомогти?"
 
 
-@REG.register("help", help="Показать справку", section=SECTION_SYSTEM)
+@REG.register("help", help="Show help", section=SECTION_SYSTEM)
 @input_error
 def cmd_help(args: List[str], storage: Storage) -> str:  # noqa: ARG001
     if args:
@@ -540,14 +540,14 @@ def cmd_help(args: List[str], storage: Storage) -> str:  # noqa: ARG001
     return REG.help_text()
 
 
-@REG.register("close", help="Закрыть программу", section=SECTION_SYSTEM)
-@REG.register("exit", help="Закрыть программу", section=SECTION_SYSTEM)
+@REG.register("close", help="Close program", section=SECTION_SYSTEM)
+@REG.register("exit", help="Close program", section=SECTION_SYSTEM)
 @input_error
 def cmd_exit(args: List[str], storage: Storage) -> str:  # noqa: ARG001
     return "__EXIT__"
 
 
-@REG.register("version", help="Показать версию", section=SECTION_SYSTEM)
+@REG.register("version", help="Show version", section=SECTION_SYSTEM)
 @input_error
 def cmd_version(args: List[str], storage: Storage) -> str:  # noqa: ARG001
     from config import APP_NAME, APP_VERSION
