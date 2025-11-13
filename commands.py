@@ -9,7 +9,7 @@ import functools
 
 from models import Address, Birthday, Email, Name, Note, Phone, Record
 from storage import Storage, save_storage
-# ЗМІНЕНО: додано імпорт кольорових помічників
+# додано імпорт кольорових помічників
 from color_helper import (
     colored_error, colored_title, colored_tag, BADGE_ERROR, BADGE_ASSISTANT,
     ICON_PHONE, ICON_NOTES, ICON_BYE, ICON_BIRTHDAY, colored_info, colored_warning
@@ -93,7 +93,7 @@ class CommandRegistry:
             if not cmds:
                 continue
             lines.append("")
-            # ЗМІНЕНО: Додано іконки до назв секцій
+            # Додано іконки до назв секцій
             section_display = section
             if section == SECTION_PHONEBOOK:
                 section_display = f"{ICON_PHONE} {section}"
@@ -104,7 +104,7 @@ class CommandRegistry:
             lines.append(f"{section_display}:")
             for cmd in cmds:
                 desc = self._help.get(cmd, "")
-                # ЗМІНЕНО: Додано кольори до команд залежно від секції (блакитний для Phonebook, жовтий для Notes, синій для System)
+                # Додано кольори до команд залежно від секції (блакитний для Phonebook, жовтий для Notes, синій для System)
                 if section == SECTION_PHONEBOOK:
                     colored_cmd = colored_info(cmd)
                 elif section == SECTION_NOTES:
@@ -156,20 +156,20 @@ def input_error(func: Handler) -> Handler:
         try:
             return func(args, storage)
         except KeyError as e:
-            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір для не знайдених ключів
+            # Додано помилку-бейдж та червоний колір для не знайдених ключів
             err_key = e.args[0] if e.args else '?'
             error_text = f"Not found: '{err_key}'."
             return f"{BADGE_ERROR} {colored_error(error_text)}"
         except ValueError as e:
-            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір для помилок значень
+            # Додано помилку-бейдж та червоний колір для помилок значень
             error_text = f"Value error: {e}"
             return f"{BADGE_ERROR} {colored_error(error_text)}"
         except IndexError as e:
-            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір 
+            # Додано помилку-бейдж та червоний колір 
             error_msg = str(e) if str(e) else "Not enough arguments. Use: help"
             return f"{BADGE_ERROR} {colored_error(error_msg)}"
         except Exception as e:
-            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір для загальних помилок
+            # Додано помилку-бейдж та червоний колір для загальних помилок
             error_text = f"Error: {e}"
             return f"{BADGE_ERROR} {colored_error(error_text)}"
 
@@ -232,7 +232,7 @@ def cmd_add(args: List[str], storage: Storage) -> str:
         if phone:
             rec.add_phone(phone)
         storage.contacts.add_record(rec)
-        # ЗМІНЕНО: Додано кольори до "Name:" та "Phone:" 
+        # Додано кольори до "Name:" та "Phone:" 
         if phone:
             return f"{colored_tag('Name:')} {rec.name.value} {colored_tag('Phone:')} {phone.value}"
         else:
@@ -244,7 +244,7 @@ def cmd_add(args: List[str], storage: Storage) -> str:
     if any(p.value == phone.value for p in rec.phones):
         return f"Phone {phone.value} already exists for {rec.name.value}."
     rec.add_phone(phone)
-    # ЗМІНЕНО: Додано кольори до "Phone:" 
+    # Додано кольори до "Phone:" 
     return f"{colored_tag('Phone:')} {phone.value} added for {rec.name.value}"
 
 
@@ -259,7 +259,7 @@ def cmd_add(args: List[str], storage: Storage) -> str:
 def cmd_change(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     rec.edit_phone(args[1], args[2])
-    # ЗМІНЕНО: Додано кольори до "Phone:" 
+    # Додано кольори до "Phone:" 
     return f"{colored_tag('Phone:')} updated for {rec.name.value}: {args[1]} → {args[2]}"
 
 
@@ -274,7 +274,7 @@ def cmd_phone(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     if not rec.phones:
         return f"No phone numbers for {rec.name.value}."
-    # ЗМІНЕНО: Додано кольори до"Phones:" 
+    # Додано кольори до"Phones:" 
     numbers = ", ".join(p.value for p in rec.phones)
     return f"{colored_tag('Phones:')} {numbers}"
 
@@ -289,7 +289,7 @@ def cmd_all(args: List[str], storage: Storage) -> str:  # noqa: ARG001
     items = storage.contacts.all()
     if not items:
         return "No contacts."
-    # ЗМІНЕНО: Додано кольори до ключів у виводі контактів (Name, Phones, Emails, Address, Birthday)
+    # Додано кольори до ключів у виводі контактів (Name, Phones, Emails, Address, Birthday)
     colored_items = []
     for r in items:
         parts = []
@@ -333,7 +333,7 @@ def cmd_show_birthday(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     if not rec.birthday:
         return f"No birthday for {rec.name.value}."
-    # ЗМІНЕНО: Додано кольори до "Birthday:"
+    # Додано кольори до "Birthday:"
     return f"{colored_tag('Birthday:')} {rec.birthday.value}"
 
 
@@ -377,7 +377,7 @@ def cmd_birthdays(args: List[str], storage: Storage) -> str:  # noqa: ARG001
 def cmd_add_email(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     rec.add_email(Email(args[1]))
-    # змінено: додано кольори до "Email:"
+    # додано кольори до "Email:"
     return f"{colored_tag('Email:')} {args[1]} added for {rec.name.value}"
 
 
@@ -392,7 +392,7 @@ def cmd_add_email(args: List[str], storage: Storage) -> str:
 def cmd_remove_email(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     if rec.remove_email(args[1]):
-        # ЗМІНЕНО: Додано кольори до ключа "Email:" 
+        # Додано кольори до ключа "Email:" 
         return f"{colored_tag('Email:')} {args[1]} removed for {rec.name.value}"
     return "Email not found."
 
@@ -412,7 +412,7 @@ def cmd_set_address(args: List[str], storage: Storage) -> str:
     if not address_text:
         raise ValueError('Address cannot be empty.')
     rec.set_address(Address(address_text))
-    # ЗМІНЕНО: Додано кольори до "Address
+    # Додано кольори до "Address
     return f"{colored_tag('Address:')} {address_text} set for {rec.name.value}"
 
 
@@ -442,7 +442,7 @@ def cmd_remove_phone(args: List[str], storage: Storage) -> str:
 def cmd_remove_address(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     if rec.remove_address():
-        # ЗМІНЕНО: Додано кольори до "Address:"
+        # Додано кольори до "Address:"
         return f"Address removed for {rec.name.value}."
     return "No address to remove."
 
@@ -505,7 +505,7 @@ def cmd_list_notes(args: List[str], storage: Storage) -> str:
         return "No notes."
     out = []
     for n in items:
-        # ЗМІНЕНО: Додано фіолетовий колір до тегів
+        # Додано фіолетовий колір до тегів
         if n.tags:
             sorted_tags = sorted(n.tags)
             formatted_tags = " #".join(sorted_tags)
@@ -530,7 +530,7 @@ def cmd_find_note(args: List[str], storage: Storage) -> str:
         return "No results."
     out = []
     for n in res:
-        # зміненo: додано фіолетовий колір до тегів
+        # додано фіолетовий колір до тегів
         if n.tags:
             sorted_tags = sorted(n.tags)
             formatted_tags = " #".join(sorted_tags)
@@ -555,7 +555,7 @@ def cmd_find_tag(args: List[str], storage: Storage) -> str:
         return "No results."
     out = []
     for n in res:
-        # ЗМІНЕНО: Додано фіолетовий колір до тегів
+        # Додано фіолетовий колір до тегів
         if n.tags:
             sorted_tags = sorted(n.tags)
             formatted_tags = " #".join(sorted_tags)
@@ -595,7 +595,7 @@ def cmd_edit_note(args: List[str], storage: Storage) -> str:
 def cmd_tag_add(args: List[str], storage: Storage) -> str:
     note = storage.notes.get_note(args[0])
     note.add_tags(*args[1:])
-    # змінено: додано фіолетовий колір до тегів
+    # додано фіолетовий колір до тегів
     colored_tags = colored_tag(", ".join(sorted(args[1:])))
     return f"Tags added to '{args[0]}': {colored_tags}"
 
@@ -611,7 +611,7 @@ def cmd_tag_add(args: List[str], storage: Storage) -> str:
 def cmd_tag_remove(args: List[str], storage: Storage) -> str:
     note = storage.notes.get_note(args[0])
     if note.remove_tag(args[1]):
-        # змінено: додано фіолетовий колір до тегів
+        # додано фіолетовий колір до тегів
         colored_tag_name = colored_tag(args[1])
         return f"Tag removed from '{args[0]}': {colored_tag_name}"
     return "Tag not found."

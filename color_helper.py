@@ -1,5 +1,5 @@
 """
-Color helper module для colorama текстового стилю та кольорів.
+Color helper module для colorama текстового стилю, бейджів та іконок.
 
 Визначає кольори для різних типів повідомлень:
 - червоний для помилок
@@ -31,7 +31,7 @@ TAG_COLOR = Fore.MAGENTA
 # зелений колір для успішних/асистентських повідомлень
 SUCCESS_COLOR = Fore.GREEN
 
-# жовтий колір для попереджень
+# жовтий колір для нотаток
 WARNING_COLOR = Fore.YELLOW
 
 # блакитний колір для інформаційних повідомлень
@@ -83,10 +83,10 @@ def colored_success(text: str) -> str:
 
 
 def colored_warning(text: str) -> str:
-    """форматувати текст як попередження (жовтий колір). Поки незадіяно"""
+    """форматувати текст (жовтий колір)."""
     return f"{WARNING_COLOR}{text}{Style.RESET_ALL}"
 
 
 def colored_info(text: str) -> str:
-    """форматувати текст як інформаційне повідомлення (блакитний колір)."""
+    """форматувати текст (блакитний колір)."""
     return f"{INFO_COLOR}{text}{Style.RESET_ALL}"
