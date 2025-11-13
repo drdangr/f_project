@@ -45,15 +45,13 @@ class HintsCompleter(Completer):
         cur_index = len(tokens) if ends_with_space else len(tokens) - 1
 
         command = tokens[0].lower()
-        
+        # 1a) Підказки для команди "help" (другий аргумент - ім'я команди)
         if command == "help" and cur_index == 1:
             low = word.lower()
             for hint in self.hints:          # self.hints = список усіх команд
                 if hint.startswith(low):
                     yield Completion(hint, start_position=-len(word))
             return
-               
-
         # 2) Підказки імен тільки для ДРУГОГО аргументу (cur_index == 1)
         if cur_index == 1 and command in (
             "add-contact", "change-phone", "show-phone", "add-birthday",
@@ -105,7 +103,8 @@ def get_all_commands() -> List[str]:
 def get_contact_names(storage):
     """
     Return a list of contact display names from storage.contacts (AddressBook).
-    Handles both API-based (.all()) and dict-backed (.data / ._data) implementations.
+    Handles both API-based (.all())
+    and dict-backed (.data / ._data) implementations.
     """
     names = []
 
@@ -153,7 +152,7 @@ def run_cli() -> None:
     session = PromptSession()
 
     # Debug
-    #print("DEBUG contact names:", get_contact_names(storage))
+    # print("DEBUG contact names:", get_contact_names(storage))
 
     completer = HintsCompleter(
         hints=get_all_commands(),
@@ -190,14 +189,13 @@ def run_cli() -> None:
         except IndexError as e:
             # Додано помилку-бейдж та червоний колір для помилок індексу
             out = f"{BADGE_ERROR} {colored_error(str(e))}"
-        
-        if out == "__EXIT__": break
+        if out == "__EXIT__":
+            break
         # Виведення з бейджем асистента, якщо це не помилка
         if not out.startswith(f"{BADGE_ERROR}"):
             print(f"{BADGE_ASSISTANT} {out}")
         else:
             print(out)
 
-    # ЗМІНЕНО: Додано іконку 
+    # ЗМІНЕНО: Додано іконку
     print("👋 Bye!")
-
