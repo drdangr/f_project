@@ -1,64 +1,88 @@
-Available Commands:
+# Available Commands
 
+## Phonebook
 
+- **add-contact**: add new contact or update existing with additional phone number
+  - Usage: `add-contact "Name" [0123456789]`
 
-ContactBook:
+- **change-phone**: change contact's phone number
+  - Usage: `change-phone "Name" old10 new10`
 
- - add  **--> add-contact**: add new contact or update existing with additional phone number: **add-contact** "Name" \[0123456789]
+- **show-phone**: show contact's phone numbers
+  - Usage: `show-phone "Name"`
 
- - add-birthday: add contact's birthday : add-birthday "Name" DD.MM.YYYY
+- **all-contacts**: show all contacts from storage
+  - Usage: `all-contacts`
 
- - add-email: add contact's emails: add-email "Name" example@mail.com
+- **add-birthday**: add contact's birthday
+  - Usage: `add-birthday "Name" DD.MM.YYYY`
 
- - all  **--> all-contacts**: show all contacts from storage: **all-contacts**
+- **show-birthday**: show contact's birthday
+  - Usage: `show-birthday "Name"`
 
-  - birthdays: show birthdays within 7 days period: birthdays
+- **birthdays**: show upcoming birthdays (within 7 days)
+  - Usage: `birthdays`
 
-  - change **--> change-phone**: change contact's phone: **change-phone** "Name" \[old10] \[new10]
+- **add-email**: add contact's email
+  - Usage: `add-email "Name" example@mail.com`
 
-  - delete-contact: delete the whole contact with all fields : delete-contact "Name"
+- **delete-email**: delete contact's email
+  - Usage: `delete-email "Name" example@mail.com`
 
-  - find **--> find-contact**: contact's search based on contact's field value: **find-contact** field value]
+- **add-address**: set contact's address
+  - Usage: `add-address "Name" "Kyiv, ..."`
 
-  - phone: **--> show-phone** show contact's phones: **show-phone** "Name"
+- **delete-address**: delete contact's address
+  - Usage: `delete-address "Name"`
 
-  - remove-email **--> delete-email**: delete contact's email: **delete-email** "Name" example@mail.com
+- **delete-phone**: delete contact's phone number
+  - Usage: `delete-phone "Name" 0123456789`
 
-  - set-address: set contact's address: set-address "Name" "Kyiv, ..."
+- **find-contact**: search contacts by field value
+  - Usage: `find-contact query`
 
-  - show-birthday: show contact's birthday: show-birthday "Name"
+- **delete-contact**: delete the whole contact with all fields
+  - Usage: `delete-contact "Name"`
 
+## Notes
 
+- **add-note**: add note with title
+  - Usage: `add-note "Title" text...`
 
-Notes:
+- **all-notes**: show all notes (sort by title or created)
+  - Usage: `all-notes [title|created]`
 
-  - add-note: add note with title: add-note "Title" текст...
+- **find-note**: find note by text query
+  - Usage: `find-note query`
 
-  - delete-note: delete note by it's title: delete-note "Title"
+- **find-tag**: find notes by tag
+  - Usage: `find-tag tag`
 
-  - edit-note: edit a note's content by its title: edit-note "Title" новий\_текст...
+- **edit-note**: edit a note's content by its title
+  - Usage: `edit-note "Title" new_text...`
 
-  - find-note: find note by query: find-note query
+- **add-tags**: add tags to note by its title
+  - Usage: `add-tags "Title" tag1 tag2 ...`
 
-  - find-tag: find notes by tag: find-tag tag
+- **delete-tag**: delete tag from note by its title
+  - Usage: `delete-tag "Title" tag`
 
-  - list-notes  **--> all-notes**: show all notes: **all-notes** \[title|created]
+- **delete-note**: delete note by its title
+  - Usage: `delete-note "Title"`
 
-  - tag-add **--> add-tags**: add tags by their title: **add-tags** "Title" tag1 tag2 ...
+## System
 
-  - tag-remove **--> delete-tag**: delete tag by it's title: **delete-tag** "Title" tag
+- **hello**: greetings from the bot
+  - Usage: `hello`
 
+- **help**: show all available commands with their descriptions
+  - Usage: `help [command]`
 
+- **close**: close the program
+  - Usage: `close`
 
-System:
+- **exit**: close the program
+  - Usage: `exit`
 
-  - close: close the program
-
-  - exit: close the program
-
-  - hello: greetings from the bot
-
-  - help: show all available commands with their descriptions
-
-  - version: show current version
-
+- **version**: show current version and storage path
+  - Usage: `version`
