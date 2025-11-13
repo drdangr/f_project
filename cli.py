@@ -10,6 +10,8 @@ import shlex
 from config import APP_NAME, APP_VERSION
 from commands import REG
 from storage import STORAGE_FILE, load_storage
+# ЗМІНЕНО: додано імпорт кольорових помічників
+from color_helper import ICON_BOT, BADGE_ERROR, BADGE_ASSISTANT, colored_error
 
 # ----prompt_toolkit для автокомпліту команд ----
 from prompt_toolkit.completion import Completer, Completion
@@ -130,7 +132,8 @@ def get_contact_names(storage):
 
 def run_cli() -> None:
     storage = load_storage()
-    print(f"{APP_NAME} v{APP_VERSION}. Type 'help' for commands.")
+    # ЗМІНЕНО: Додано іконку бота після APP_NAME
+    print(f"{APP_NAME} {ICON_BOT} v{APP_VERSION}. Type 'help' for commands.")
     print(f"Data stored in: {STORAGE_FILE}\n")
 
     session = PromptSession()
@@ -161,7 +164,9 @@ def run_cli() -> None:
         resolved = REG.resolve(cmd_name)
 
         if not resolved:
-            print("Unknown command. Type 'help'.")
+            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір для невідомих команд
+            error_msg = "Unknown command. Type 'help'."
+            print(f"{BADGE_ERROR} {colored_error(error_msg)}")
             continue
 
         try:
@@ -169,10 +174,16 @@ def run_cli() -> None:
             handler = REG.handler(resolved)
             out = handler(args, storage)
         except IndexError as e:
-            out = str(e)
+            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір для помилок індексу
+            out = f"{BADGE_ERROR} {colored_error(str(e))}"
         
         if out == "__EXIT__": break
-        print(out)
+        # ЗМІНЕНО: Виведення з бейджем асистента, якщо це не помилка
+        if not out.startswith(f"{BADGE_ERROR}"):
+            print(f"{BADGE_ASSISTANT} {out}")
+        else:
+            print(out)
 
-    print("Bye!")
+    # ЗМІНЕНО: Додано іконку 
+    print("👋 Bye!")
 

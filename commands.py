@@ -9,6 +9,11 @@ import functools
 
 from models import Address, Birthday, Email, Name, Note, Phone, Record
 from storage import Storage, save_storage
+# ЗМІНЕНО: додано імпорт кольорових помічників
+from color_helper import (
+    colored_error, colored_title, colored_tag, BADGE_ERROR, BADGE_ASSISTANT,
+    ICON_PHONE, ICON_NOTES, ICON_BYE, colored_info, colored_warning
+)
 
 from datetime import date
 
@@ -88,10 +93,27 @@ class CommandRegistry:
             if not cmds:
                 continue
             lines.append("")
-            lines.append(f"{section}:")
+            # ЗМІНЕНО: Додано іконки до назв секцій
+            section_display = section
+            if section == SECTION_PHONEBOOK:
+                section_display = f"{ICON_PHONE} {section}"
+            elif section == SECTION_NOTES:
+                section_display = f"{ICON_NOTES} {section}"
+            elif section == SECTION_SYSTEM:
+                section_display = f"{ICON_BYE} {section}"
+            lines.append(f"{section_display}:")
             for cmd in cmds:
                 desc = self._help.get(cmd, "")
-                lines.append(f"  - {cmd}: {desc}")
+                # ЗМІНЕНО: Додано кольори до команд залежно від секції (блакитний для Phonebook, жовтий для Notes, синій для System)
+                if section == SECTION_PHONEBOOK:
+                    colored_cmd = colored_info(cmd)
+                elif section == SECTION_NOTES:
+                    colored_cmd = colored_warning(cmd)
+                elif section == SECTION_SYSTEM:
+                    colored_cmd = colored_title(cmd)
+                else:
+                    colored_cmd = cmd
+                lines.append(f"  - {colored_cmd}: {desc}")
 
         lines.append("")
         lines.append("Для деталей щодо конкретної команди використовуйте: help <command>")
@@ -101,7 +123,7 @@ class CommandRegistry:
 SECTION_PHONEBOOK = "Phonebook"
 SECTION_NOTES = "Notes"
 SECTION_SYSTEM = "System"
-SECTION_ORDER = [SECTION_PHONEBOOK, SECTION_NOTES, SECTION_SYSTEM, "Прочее"]
+SECTION_ORDER = [SECTION_PHONEBOOK, SECTION_NOTES, SECTION_SYSTEM, "Other"]
 DEFAULT_SECTION = SECTION_ORDER[-1]
 
 
@@ -134,13 +156,22 @@ def input_error(func: Handler) -> Handler:
         try:
             return func(args, storage)
         except KeyError as e:
-            return f"Not found: '{e.args[0] if e.args else '?'}'."
+            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір для не знайдених ключів
+            err_key = e.args[0] if e.args else '?'
+            error_text = f"Not found: '{err_key}'."
+            return f"{BADGE_ERROR} {colored_error(error_text)}"
         except ValueError as e:
-            return f"Value error: {e}"
+            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір для помилок значень
+            error_text = f"Value error: {e}"
+            return f"{BADGE_ERROR} {colored_error(error_text)}"
         except IndexError as e:
-            return str(e) if str(e) else "Not enough arguments. Use: help"
+            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір 
+            error_msg = str(e) if str(e) else "Not enough arguments. Use: help"
+            return f"{BADGE_ERROR} {colored_error(error_msg)}"
         except Exception as e:
-            return f"Error: {e}"
+            # ЗМІНЕНО: Додано помилку-бейдж та червоний колір для загальних помилок
+            error_text = f"Error: {e}"
+            return f"{BADGE_ERROR} {colored_error(error_text)}"
 
     return inner
 
@@ -201,11 +232,11 @@ def cmd_add(args: List[str], storage: Storage) -> str:
         if phone:
             rec.add_phone(phone)
         storage.contacts.add_record(rec)
-        return (
-            f"Added contact {rec.name.value} with phone {phone.value}."
-            if phone
-            else f"Added contact {rec.name.value}."
-        )
+        # ЗМІНЕНО: Додано кольори до "Name:" та "Phone:" 
+        if phone:
+            return f"{colored_tag('Name:')} {rec.name.value} {colored_tag('Phone:')} {phone.value}"
+        else:
+            return f"{colored_tag('Name:')} {rec.name.value}"
 
     if not phone:
         return f"Contact {rec.name.value} already exists. Provide a phone to add."
@@ -213,7 +244,8 @@ def cmd_add(args: List[str], storage: Storage) -> str:
     if any(p.value == phone.value for p in rec.phones):
         return f"Phone {phone.value} already exists for {rec.name.value}."
     rec.add_phone(phone)
-    return f"Phone added for {rec.name.value}."
+    # ЗМІНЕНО: Додано кольори до "Phone:" 
+    return f"{colored_tag('Phone:')} {phone.value} added for {rec.name.value}"
 
 
 @REG.register(
@@ -227,7 +259,8 @@ def cmd_add(args: List[str], storage: Storage) -> str:
 def cmd_change(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     rec.edit_phone(args[1], args[2])
-    return f"Phone updated for {rec.name.value}."
+    # ЗМІНЕНО: Додано кольори до "Phone:" 
+    return f"{colored_tag('Phone:')} updated for {rec.name.value}: {args[1]} → {args[2]}"
 
 
 @REG.register(
@@ -241,8 +274,9 @@ def cmd_phone(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     if not rec.phones:
         return f"No phone numbers for {rec.name.value}."
+    # ЗМІНЕНО: Додано кольори до"Phones:" 
     numbers = ", ".join(p.value for p in rec.phones)
-    return f"{rec.name.value}: {numbers}"
+    return f"{colored_tag('Phones:')} {numbers}"
 
 
 @REG.register(
@@ -255,7 +289,23 @@ def cmd_all(args: List[str], storage: Storage) -> str:  # noqa: ARG001
     items = storage.contacts.all()
     if not items:
         return "No contacts."
-    return "\n".join(str(r) for r in items)
+    # ЗМІНЕНО: Додано кольори до ключів у виводі контактів (Name, Phones, Emails, Address, Birthday)
+    colored_items = []
+    for r in items:
+        parts = []
+        parts.append(f"{colored_tag('Name:')} {r.name.value}")
+        if r.phones:
+            phone_values = ", ".join(p.value for p in r.phones)
+            parts.append(f"{colored_tag('Phones:')} {phone_values}")
+        if r.emails:
+            email_values = ", ".join(e.value for e in r.emails)
+            parts.append(f"{colored_tag('Emails:')} {email_values}")
+        if r.address:
+            parts.append(f"{colored_tag('Address:')} {str(r.address)}")
+        if r.birthday:
+            parts.append(f"{colored_tag('Birthday:')} {r.birthday.value}")
+        colored_items.append(" | ".join(parts))
+    return "\n".join(colored_items)
 
 
 @REG.register(
@@ -283,7 +333,8 @@ def cmd_show_birthday(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     if not rec.birthday:
         return f"No birthday for {rec.name.value}."
-    return f"{rec.name.value}: {rec.birthday.value}"
+    # ЗМІНЕНО: Додано кольори до "Birthday:"
+    return f"{colored_tag('Birthday:')} {rec.birthday.value}"
 
 
 @REG.register(
@@ -326,7 +377,8 @@ def cmd_birthdays(args: List[str], storage: Storage) -> str:  # noqa: ARG001
 def cmd_add_email(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     rec.add_email(Email(args[1]))
-    return f"Email added for {rec.name.value}."
+    # змінено: додано кольори до "Email:"
+    return f"{colored_tag('Email:')} {args[1]} added for {rec.name.value}"
 
 
 @REG.register(
@@ -340,7 +392,8 @@ def cmd_add_email(args: List[str], storage: Storage) -> str:
 def cmd_remove_email(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     if rec.remove_email(args[1]):
-        return f"Email removed for {rec.name.value}."
+        # ЗМІНЕНО: Додано кольори до ключа "Email:" 
+        return f"{colored_tag('Email:')} {args[1]} removed for {rec.name.value}"
     return "Email not found."
 
 
@@ -359,7 +412,8 @@ def cmd_set_address(args: List[str], storage: Storage) -> str:
     if not address_text:
         raise ValueError('Address cannot be empty.')
     rec.set_address(Address(address_text))
-    return f"Address set for {rec.name.value}."
+    # ЗМІНЕНО: Додано кольори до "Address
+    return f"{colored_tag('Address:')} {address_text} set for {rec.name.value}"
 
 
 @REG.register(
@@ -388,6 +442,7 @@ def cmd_remove_phone(args: List[str], storage: Storage) -> str:
 def cmd_remove_address(args: List[str], storage: Storage) -> str:
     rec = storage.contacts.get_record(args[0])
     if rec.remove_address():
+        # ЗМІНЕНО: Додано кольори до "Address:"
         return f"Address removed for {rec.name.value}."
     return "No address to remove."
 
@@ -450,7 +505,13 @@ def cmd_list_notes(args: List[str], storage: Storage) -> str:
         return "No notes."
     out = []
     for n in items:
-        tgs = ("#" + " #".join(sorted(n.tags))) if n.tags else "(no tags)"
+        # ЗМІНЕНО: Додано фіолетовий колір до тегів
+        if n.tags:
+            sorted_tags = sorted(n.tags)
+            formatted_tags = " #".join(sorted_tags)
+            tgs = colored_tag(f"#{formatted_tags}")
+        else:
+            tgs = "(no tags)"
         out.append(f"{n.title} [{tgs}] — {n.created:%Y-%m-%d %H:%M}\n{n.text}")
     separator = "\n" + "-" * 40 + "\n"
     return separator + separator.join(out) + separator
@@ -469,11 +530,11 @@ def cmd_find_note(args: List[str], storage: Storage) -> str:
         return "No results."
     out = []
     for n in res:
-        #tgs = ("#" + " #".join(sorted(n.tags))) if n.tags else "(no tags)"
+        # зміненo: додано фіолетовий колір до тегів
         if n.tags:
             sorted_tags = sorted(n.tags)
             formatted_tags = " #".join(sorted_tags)
-            tgs = f"#{formatted_tags}"
+            tgs = colored_tag(f"#{formatted_tags}")
         else:
             tgs = "(no tags)"
         out.append(f"{n.title} [{tgs}]\n{n.text}")
@@ -494,7 +555,13 @@ def cmd_find_tag(args: List[str], storage: Storage) -> str:
         return "No results."
     out = []
     for n in res:
-        tgs = ("#" + " #".join(sorted(n.tags))) if n.tags else "(no tags)"
+        # ЗМІНЕНО: Додано фіолетовий колір до тегів
+        if n.tags:
+            sorted_tags = sorted(n.tags)
+            formatted_tags = " #".join(sorted_tags)
+            tgs = colored_tag(f"#{formatted_tags}")
+        else:
+            tgs = "(no tags)"
         out.append(f"{n.title} [{tgs}]\n{n.text}")
     separator = "\n" + "-" * 40 + "\n"
     return separator + separator.join(out) + separator
@@ -528,7 +595,9 @@ def cmd_edit_note(args: List[str], storage: Storage) -> str:
 def cmd_tag_add(args: List[str], storage: Storage) -> str:
     note = storage.notes.get_note(args[0])
     note.add_tags(*args[1:])
-    return f"Tags added to '{args[0]}': {', '.join(sorted(args[1:]))}"
+    # змінено: додано фіолетовий колір до тегів
+    colored_tags = colored_tag(", ".join(sorted(args[1:])))
+    return f"Tags added to '{args[0]}': {colored_tags}"
 
 
 @REG.register(
@@ -542,7 +611,9 @@ def cmd_tag_add(args: List[str], storage: Storage) -> str:
 def cmd_tag_remove(args: List[str], storage: Storage) -> str:
     note = storage.notes.get_note(args[0])
     if note.remove_tag(args[1]):
-        return f"Tag removed from '{args[0]}'."
+        # змінено: додано фіолетовий колір до тегів
+        colored_tag_name = colored_tag(args[1])
+        return f"Tag removed from '{args[0]}': {colored_tag_name}"
     return "Tag not found."
 
 
