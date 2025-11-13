@@ -200,7 +200,6 @@ class Record:
             return None
         return (next_bd - today).days
 
-
     def get_next_birthday(self, today: Optional[date] = None) -> Optional[date]:
         """
         Отримати дату наступного дня народження.
@@ -238,7 +237,6 @@ class Record:
 
         # === Кінець додавання ===
         return next_bd
-
 
     def __str__(self) -> str:
         parts = [f"Name: {self.name}"]
@@ -387,5 +385,3 @@ class NoteBook(UserDict):
         if sort_by == "created":
             return sorted(self.data.values(), key=lambda n: n.created)
         return sorted(self.data.values(), key=lambda n: n.title.lower())
- 
- 
