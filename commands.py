@@ -87,7 +87,7 @@ class CommandRegistry:
             section = self._sections.get(cmd, DEFAULT_SECTION)
             groups.setdefault(section, []).append(cmd)
 
-        lines = ["Доступні команди:"]
+        lines = ["Available commands:"]
         for section in SECTION_ORDER:
             cmds = groups.get(section, [])
             if not cmds:
@@ -116,7 +116,7 @@ class CommandRegistry:
                 lines.append(f"  - {colored_cmd}: {desc}")
 
         lines.append("")
-        lines.append("Для деталей щодо конкретної команди використовуйте: help <command>")
+        lines.append("For command details use: help <command>")
         return "\n".join(lines)
 
 
@@ -639,7 +639,7 @@ def cmd_delete_note(args: List[str], storage: Storage) -> str:
 @REG.register("hello", help="Greeting from bot", section=SECTION_SYSTEM)
 @input_error
 def cmd_hello(args: List[str], storage: Storage) -> str:  # noqa: ARG001
-    return "Привіт! Чим можу допомогти?"
+    return "Hello! How can I help you?"
 
 
 @REG.register("help", help="Show help", section=SECTION_SYSTEM)

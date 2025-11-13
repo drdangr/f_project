@@ -24,16 +24,12 @@ class HintsCompleter(Completer):
         self.get_contacts_func = get_contacts_func  # optional callback
 
     def get_completions(self, document, complete_event):
-        tb = document.text_before_cursor           # <-- no .strip()
+        tb = document.text_before_cursor
         word = document.get_word_before_cursor()
         tokens = tb.split()
         ends_with_space = tb.endswith(" ")
 
-        # --- First token (command) completion ---
-        # Cases considered "still typing the command":
-        #   ""                      -> no tokens yet
-        #   "ad"                    -> 1 token, no trailing space
-        #   "add"                   -> 1 token, no trailing space
+        # 1) Підказки для команди (перший токен)
         if not tokens or (len(tokens) == 1 and not ends_with_space):
             low = word.lower()
             for hint in self.hints:
@@ -41,11 +37,29 @@ class HintsCompleter(Completer):
                     yield Completion(hint, start_position=-len(word))
             return
 
-        # --- Argument completion (after first space) ---
+        # Який токен зараз редагується? (0-based)
+        # приклади:
+        #   "add|"                -> tokens=['add']            , cur_index=0
+        #   "add Sa|"             -> tokens=['add','Sa']       , cur_index=1
+        #   "add Sasha 050|"      -> tokens=['add','Sasha','050'], cur_index=2
+        cur_index = len(tokens) if ends_with_space else len(tokens) - 1
+
         command = tokens[0].lower()
-        if command in ("add-contact", "change-phone", "show-phone", "add-birthday"
-                       , "show-birthday","add-email", "delete-email","add-address", "delete-contact"
-                       ,"delete-phone","delete-address"):
+        
+        if command == "help" and cur_index == 1:
+            low = word.lower()
+            for hint in self.hints:          # self.hints = список усіх команд
+                if hint.startswith(low):
+                    yield Completion(hint, start_position=-len(word))
+            return
+               
+
+        # 2) Підказки імен тільки для ДРУГОГО аргументу (cur_index == 1)
+        if cur_index == 1 and command in (
+            "add-contact", "change-phone", "show-phone", "add-birthday",
+            "show-birthday", "add-email", "delete-email", "add-address",
+            "delete-contact", "delete-phone", "delete-address", "find-contact"
+        ):
             if self.get_contacts_func:
                 low = word.lower()
                 for name in self.get_contacts_func():
