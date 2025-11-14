@@ -198,6 +198,7 @@ print('✓ Contact created and saved')
 
 ### Старт
 ```bash
+python.exe -m pip install -r requirements.txt # Встановити залежності
 python3 main.py
 ```
 
