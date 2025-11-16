@@ -31,7 +31,7 @@ except KeyError:
     print("Not found")
 
 # 3. Декоратори для наскрізної функціональності
-@REG.register("cmd-name", help="Usage: cmd-name arg", min_args=1)
+@REG.register("cmd-name", help="Usage: cmd-name arg", min_args=1) # Реєстрація команди
 @input_error      # Обробка помилок
 @mutating         # Автозбереження
 def cmd_example(args, storage):
